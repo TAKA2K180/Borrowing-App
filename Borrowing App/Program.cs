@@ -20,16 +20,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true);
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = false;
+})
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultUI()
+        .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultUI()
-            .AddDefaultTokenProviders();
 builder.Services.AddRazorPages();
 
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

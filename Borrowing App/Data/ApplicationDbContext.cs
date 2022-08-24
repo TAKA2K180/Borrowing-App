@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Borrowing_App.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
         public DbSet<Borrowing_App.Models.Borrower>? Borrower { get; set; }
+        //public DbSet<ApplicationUser> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

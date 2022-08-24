@@ -21,7 +21,7 @@ namespace Borrowing_App.Controllers
         }
 
         // GET: Borrowers
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Superadmin")]
         public async Task<IActionResult> Index()
         {
               return _context.Borrower != null ? 
