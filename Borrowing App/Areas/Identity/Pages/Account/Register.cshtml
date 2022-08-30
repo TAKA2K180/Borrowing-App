@@ -16,6 +16,11 @@
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating">
+                <input asp-for="Input.EmpiId" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.EmpiId"></label>
+                <span asp-validation-for="Input.EmpiId" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
                 <input asp-for="Input.FirstName" class="form-control" autocomplete="username" aria-required="true" />
                 <label asp-for="Input.FirstName"></label>
                 <span asp-validation-for="Input.FirstName" class="text-danger"></span>
@@ -29,6 +34,11 @@
                 <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
                 <label asp-for="Input.Email"></label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.Department" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.Department"></label>
+                <span asp-validation-for="Input.Department" class="text-danger"></span>
             </div>
             <div class="form-floating">
                 <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />

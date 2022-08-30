@@ -1,7 +1,7 @@
 ﻿@using Borrowing_App.Models
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationBuilder> userManager
+@inject UserManager<ApplicationUser> userManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

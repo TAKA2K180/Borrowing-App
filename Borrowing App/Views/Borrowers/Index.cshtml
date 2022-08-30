@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Borrowing_App.Models.Borrower>
+﻿@model dynamic
 
 @{
     ViewData["Title"] = "Index";
@@ -13,53 +13,64 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.EmpiId)
+                ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Item)
+                Item
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ItemDescription)
+                ItemDescription
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.BorrowDate)
+                BorrowDate
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Remarks)
+                Remarks
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (ApplicationUser user in Model.ApplicationUser) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.EmpiId)
+                @Html.DisplayFor(modelItem => user.EmpiID)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => user.FirstName + " "+ user.LastName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Item)
+                @Html.DisplayFor(modelItem => user.Department)
+                </td>
+            <td>
+               Item
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ItemDescription)
+                ItemDescription
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.BorrowDate)
+                BorrowDate
             </td>
+            <td>Reason</td>
             <td>
-                @Html.DisplayFor(modelItem => item.Remarks)
+                Remarks
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
-            </td>
+            
+            
         </tr>
 }
+<tr>
+    @foreach (Borrower borrower in Model.Borrower)
+            {
+                <td>
+                <a asp-action="Edit" asp-route-id="@borrower.id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@borrower.id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@borrower.id">Delete</a>
+            </td>
+            }
+        </tr>
     </tbody>
 </table>

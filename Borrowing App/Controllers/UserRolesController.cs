@@ -1,14 +1,17 @@
 ﻿using Borrowing_App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Borrowing_App.Controllers
 {
+    [Authorize(Roles = "SuperAdmin")]
     public class UserRolesController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+
         public UserRolesController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _roleManager = roleManager;
@@ -21,6 +24,7 @@ namespace Borrowing_App.Controllers
             foreach (ApplicationUser user in users)
             {
                 var thisViewModel = new UserRolesViewModel();
+                thisViewModel.UserId = user.Id;
                 thisViewModel.Email = user.Email;
                 thisViewModel.FirstName = user.FirstName;
                 thisViewModel.LastName = user.LastName;
@@ -29,15 +33,10 @@ namespace Borrowing_App.Controllers
             }
             return View(userRolesViewModel);
         }
-        private async Task<List<string>> GetUserRoles(ApplicationUser user)
-        {
-            return new List<string>(await _userManager.GetRolesAsync(user));
-        }
-
-        public async Task<IActionResult> Manage(Guid userId)
+        public async Task<IActionResult> Manage(string userId)
         {
             ViewBag.userId = userId;
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 ViewBag.ErrorMessage = $"User with Id = {userId} cannot be found";
@@ -45,7 +44,7 @@ namespace Borrowing_App.Controllers
             }
             ViewBag.UserName = user.UserName;
             var model = new List<ManageUserRolesViewModel>();
-            foreach (var role in _roleManager.Roles)
+            foreach (var role in _roleManager.Roles.ToList())
             {
                 var userRolesViewModel = new ManageUserRolesViewModel
                 {
@@ -65,9 +64,9 @@ namespace Borrowing_App.Controllers
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> Manage(List<ManageUserRolesViewModel> model, Guid userId)
+        public async Task<IActionResult> Manage(List<ManageUserRolesViewModel> model, string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return View();
@@ -86,6 +85,10 @@ namespace Borrowing_App.Controllers
                 return View(model);
             }
             return RedirectToAction("Index");
+        }
+        private async Task<List<string>> GetUserRoles(ApplicationUser user)
+        {
+            return new List<string>(await _userManager.GetRolesAsync(user));
         }
     }
 }

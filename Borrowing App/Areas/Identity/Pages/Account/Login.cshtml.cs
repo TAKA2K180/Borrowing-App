@@ -67,7 +67,7 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
         {
             [Required]
             [Display(Name = "Email / Username")]
-            public string Email { get; set; }
+            public string UserName { get; set; }
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
@@ -100,10 +100,10 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
             
             if (ModelState.IsValid)
             {
-                var userName = Input.Email;
-                if (IsValidEmail(Input.Email))
+                var userName = Input.UserName;
+                if (IsValidEmail(Input.UserName))
                 {
-                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    var user = await _userManager.FindByEmailAsync(Input.UserName);
                     if (user != null)
                     {
                         userName = user.UserName;
@@ -111,7 +111,7 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
                 }
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -128,7 +128,15 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    if (ErrorMessage == null)
+                    {
+                        ModelState.AddModelError(String.Empty, "Invalid login");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(String.Empty, ErrorMessage.ToString());
+                    }
+                    
                     return Page();
                 }
             }

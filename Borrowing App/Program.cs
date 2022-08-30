@@ -9,17 +9,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-// Add services to the container.
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//    options.UseSqlServer(connectionString));
-//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true);
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -30,6 +19,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+//builder.Services.AddScoped<ContextSeed>(await ContextSeed.SeedSuperAdminAsync);
 
 
 
@@ -77,9 +67,30 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred seeding the DB.");
     }
 }
+//async void Configure(WebApplication host)
+//{
+//    using var scope = host.Services.CreateScope();
+//    var services = scope.ServiceProvider;
+
+//    try
+//    {
+//        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+//        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+//        var dbContext = services.GetRequiredService<ContextSeed>();
+//        await ContextSeed.SeedSuperAdminAsync(userManager, roleManager);
+//    }
+//    catch (Exception ex)
+//    {
+//        //Log some error
+//        throw;
+//    }
+//}
 Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
 app.Run();
+
+

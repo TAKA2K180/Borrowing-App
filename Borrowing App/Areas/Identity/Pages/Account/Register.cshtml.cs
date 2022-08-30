@@ -73,6 +73,9 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name = "EMPI ID")]
+            public string EmpiId { get; set; }
+            [Required]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
             [Required]
@@ -86,6 +89,9 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+            [Required]
+            [Display(Name = "Department")]
+            public string Department { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -127,7 +133,9 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
                     UserName = userName,
                     Email = Input.Email,
                     FirstName = Input.FirstName,
-                    LastName = Input.LastName
+                    LastName = Input.LastName,
+                    EmpiID = Input.EmpiId,
+                    Department = Input.Department,
                 };
                 //var user = CreateUser();
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

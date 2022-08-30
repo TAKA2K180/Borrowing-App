@@ -1,10 +1,16 @@
 ﻿using Borrowing_App.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Borrowing_App.Data
 {
     public class ContextSeed
     {
+        private readonly ModelBuilder modelBuilder;
+        public ContextSeed(ModelBuilder modelBuilder)
+        {
+            this.modelBuilder = modelBuilder;
+        }
         public static async Task SeedRolesAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             //Seed Roles

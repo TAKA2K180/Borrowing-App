@@ -5,11 +5,10 @@ namespace Borrowing_App.Models
 {
     public class Borrower
     {
-        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
         [Required]
-        public int EmpiId { get; set; }
+        public string EmpiId { get; set; }
         [Required]
         public string Name{ get; set; }
         [Required]
