@@ -1,12 +1,14 @@
-﻿@model Borrowing_App.Models.Borrower
+﻿@using Borrowing_App.Models
+@model Borrowing_App.Models.Borrower
 
 @{
     ViewData["Title"] = "Create";
+    var data = ViewBag.Message;
 }
 
-<h1>Please fill up all the required details</h1>
+<h1>Borrower's information</h1>
 
-<h4>Borrower's information</h4>
+<h4>Please fill up required fields</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,7 +16,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="EmpiId" class="control-label"></label>
-                <input asp-for="EmpiId" class="form-control" />
+                <input asp-for="EmpiId" class="form-control" value="@Model.EmpiId"/>
                 <span asp-validation-for="EmpiId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -52,13 +54,15 @@
                 <input asp-for="Remarks" class="form-control" />
                 <span asp-validation-for="Remarks" class="text-danger"></span>
             </div>
-
-            <h2> </h2>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

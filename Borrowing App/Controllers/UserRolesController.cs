@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Borrowing_App.Controllers
 {
-    [Authorize(Roles = "SuperAdmin")]
+    //[Authorize(Roles = "SuperAdmin")]
     public class UserRolesController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

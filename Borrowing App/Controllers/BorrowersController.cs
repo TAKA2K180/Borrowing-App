@@ -7,74 +7,29 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Borrowing_App.Data;
 using Borrowing_App.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using static Borrowing_App.Areas.Identity.Pages.Account.Manage.IndexModel;
-using System.Dynamic;
 
 namespace Borrowing_App.Controllers
 {
-    [Authorize]
     public class BorrowersController : Controller
     {
-        private readonly ApplicationDbContext _context; 
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationUser _applicationUser;
-        private readonly Borrower _borrower;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public BorrowersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager, ApplicationUser applicationUser, Borrower borrower)
+        public BorrowersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
-            _signInManager = signInManager;
-            _applicationUser = applicationUser;
-
-            var firstName = applicationUser.FirstName;
-            var lastName = applicationUser.LastName;
-            var email = applicationUser.Email;
-            var department = applicationUser.Department;
-            borrower.Name = applicationUser.FirstName + " " + applicationUser.LastName;
-            borrower.Department = applicationUser.Department;
-            borrower.EmpiId = applicationUser.EmpiID;
+            _roleManager = roleManager;
         }
-
-        public InputModel Input { get; set; }
-        private async Task LoadAsync(ApplicationUser user, Borrower borrower)
-        {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            var firstName = user.FirstName;
-            var lastName = user.LastName;
-            var empiid = user.EmpiID;
-            var department = user.Department;
-            borrower = new Borrower
-            {
-                Name = firstName + " " + lastName,
-                EmpiId = empiid,
-                Department = department,
-            };
-        }
-        public List<ApplicationUser> GetUser()
-        {
-            List<ApplicationUser> users = new List<ApplicationUser>();
-            return users;
-        }
-        public List<Borrower> GetBorrowers()
-        {
-            List<Borrower> borrowers = new List<Borrower>();
-            return borrowers;
-        }
-
+        
         // GET: Borrowers
-        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Index()
         {
-            dynamic model = new ExpandoObject();
-            model.Borrower = GetBorrowers();
-            model.ApllicationUser = GetUser();
-            return View(model);
+              return _context.Borrower != null ? 
+                          View(await _context.Borrower.ToListAsync()) :
+                          Problem("Entity set 'ApplicationDbContext.Borrower'  is null.");
         }
 
         // GET: Borrowers/Details/5
@@ -96,19 +51,19 @@ namespace Borrowing_App.Controllers
         }
 
         // GET: Borrowers/Create
-        public IActionResult Create(ApplicationUser user, Borrower borrower)
+        public async Task<IActionResult> Create()
         {
-            var firstName = user.FirstName;
-            var lastName = user.LastName;
-            var empiid = user.EmpiID;
-            var department = user.Department;
-            borrower = new Borrower
+            var users = await _userManager.Users.ToListAsync();
+            var Borrowers = new List<Borrower>();
+            foreach (ApplicationUser user in users)
             {
-                Name = firstName + " " + lastName,
-                EmpiId = empiid,
-                Department = department,
-            };
-            return View();
+                var thisViewModel = new Borrower();
+                thisViewModel.EmpiId = user.EmpiID;
+                thisViewModel.Name = user.FirstName + " " + user.LastName;
+                thisViewModel.Department = user.Department;
+                Borrowers.Add(thisViewModel);
+            }
+            return View(Borrowers);
         }
 
         // POST: Borrowers/Create
@@ -116,26 +71,16 @@ namespace Borrowing_App.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,EmpiId,Name,Item,ItemDescription,BorrowDate,Remarks,Department,Reason")] Borrower borrower, ApplicationUser user)
+        public async Task<IActionResult> Create([Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks")] Borrower borrower)
         {
             if (ModelState.IsValid)
             {
                 borrower.id = Guid.NewGuid();
-                borrower.BorrowDate = DateTime.Now;
                 _context.Add(borrower);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Confirm));
+                return RedirectToAction(nameof(Index));
             }
-            return View(Confirm);
-        }
-        public async Task<IActionResult> Confirm(int empiid)
-        {
-            if (empiid == null || _context.Borrower == null)
-            {
-                return NotFound();
-            }
-
-            return View();
+            return View(borrower);
         }
 
         // GET: Borrowers/Edit/5
@@ -159,7 +104,7 @@ namespace Borrowing_App.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("id,EmpiId,Name,Item,ItemDescription,BorrowDate,Remarks")] Borrower borrower)
+        public async Task<IActionResult> Edit(Guid id, [Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks")] Borrower borrower)
         {
             if (id != borrower.id)
             {
