@@ -67,7 +67,7 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
         {
             [Required]
             [Display(Name = "Email / Username")]
-            public string UserName { get; set; }
+            public string Email { get; set; }
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; }
@@ -100,10 +100,10 @@ namespace Borrowing_App.Areas.Identity.Pages.Account
             
             if (ModelState.IsValid)
             {
-                var userName = Input.UserName;
-                if (IsValidEmail(Input.UserName))
+                var userName = Input.Email;
+                if (IsValidEmail(Input.Email))
                 {
-                    var user = await _userManager.FindByEmailAsync(Input.UserName);
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
                     if (user != null)
                     {
                         userName = user.UserName;

@@ -8,22 +8,24 @@ using Microsoft.EntityFrameworkCore;
 using Borrowing_App.Data;
 using Borrowing_App.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Borrowing_App.Controllers
 {
+    [Authorize]
     public class BorrowersController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-
+        
         public BorrowersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
         }
-        
+        [Authorize(Roles ="SuperAdmin")]
         // GET: Borrowers
         public async Task<IActionResult> Index()
         {
@@ -51,19 +53,23 @@ namespace Borrowing_App.Controllers
         }
 
         // GET: Borrowers/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string userName)
         {
+            //var userEmail = _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
             var users = await _userManager.Users.ToListAsync();
-            var Borrowers = new List<Borrower>();
+            var borrowers = new Borrower();
             foreach (ApplicationUser user in users)
             {
-                var thisViewModel = new Borrower();
-                thisViewModel.EmpiId = user.EmpiID;
-                thisViewModel.Name = user.FirstName + " " + user.LastName;
-                thisViewModel.Department = user.Department;
-                Borrowers.Add(thisViewModel);
+                if (user.Email.ToString() == HttpContext.User.Identity.Name)
+                {
+                    borrowers.EmpiId = user.EmpiID;
+                    borrowers.Name = user.FirstName + " " + user.LastName;
+                    borrowers.Department = user.Department;
+                    borrowers.BorrowDate = DateTime.Now;
+                }
             }
-            return View(Borrowers);
+            ViewData["Borrower"] = borrowers;
+            return View(borrowers);
         }
 
         // POST: Borrowers/Create

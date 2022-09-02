@@ -1,8 +1,8 @@
-﻿@using Borrowing_App.Models
-@model Borrowing_App.Models.Borrower
+﻿@model Borrowing_App.Models.Borrower
 
 @{
     ViewData["Title"] = "Create";
+    var borrower = ViewData["Borrower"] as Borrower;
     var data = ViewBag.Message;
 }
 
@@ -16,17 +16,17 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="EmpiId" class="control-label"></label>
-                <input asp-for="EmpiId" class="form-control" value="@Model.EmpiId"/>
+                <input asp-for="EmpiId" class="form-control" readonly/>
                 <span asp-validation-for="EmpiId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" class="form-control" readonly/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Department" class="control-label"></label>
-                <input asp-for="Department" class="form-control" />
+                <input asp-for="Department" class="form-control" readonly/>
                 <span asp-validation-for="Department" class="text-danger"></span>
             </div>
             <div class="form-group">

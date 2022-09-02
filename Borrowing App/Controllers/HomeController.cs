@@ -23,16 +23,6 @@ namespace Borrowing_App.Controllers
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            var users = await _userManager.Users.ToListAsync();
-            var Borrowers = new List<Borrower>();
-            foreach (ApplicationUser user in users)
-            {
-                var thisViewModel = new Borrower();
-                thisViewModel.EmpiId = user.EmpiID;
-                thisViewModel.Name = user.FirstName + " " + user.LastName;
-                thisViewModel.Department = user.Department;
-                Borrowers.Add(thisViewModel);
-            }
             return View();
         }
 
