@@ -25,13 +25,43 @@ namespace Borrowing_App.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
-        [Authorize(Roles ="SuperAdmin")]
+        [Authorize]
         // GET: Borrowers
         public async Task<IActionResult> Index()
         {
-              return _context.Borrower != null ? 
+            if (HttpContext.User.IsInRole("Basic") == true)
+            {
+                var users = await _userManager.Users.ToListAsync();
+                
+                var borrowers = new Borrower();
+                foreach (ApplicationUser user in users)
+                {
+                    if (user.Email.ToString() == HttpContext.User.Identity.Name)
+                    {
+                        var id = user.EmpiID;
+                        var result = _context.Borrower.Where(u => u.EmpiId == id);
+                        return View(result);
+                    }
+                    else
+                    {
+                        string error1 = "Error :(";
+                        return View(error1);
+                    }
+                }
+                string error = "Error :(";
+                return View(error);
+            }
+            else if (HttpContext.User.IsInRole("SuperAdmin") == true)
+            {
+                return _context.Borrower != null ?
                           View(await _context.Borrower.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Borrower'  is null.");
+            }
+            else
+            {
+                string error = "Error :(";
+                return View(error);
+            }
         }
 
         // GET: Borrowers/Details/5
@@ -110,7 +140,7 @@ namespace Borrowing_App.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks")] Borrower borrower)
+        public async Task<IActionResult> Edit(Guid id, [Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks, Status")] Borrower borrower)
         {
             if (id != borrower.id)
             {
@@ -121,6 +151,7 @@ namespace Borrowing_App.Controllers
             {
                 try
                 {
+                    borrower.Status = "Pending";
                     _context.Update(borrower);
                     await _context.SaveChangesAsync();
                 }
