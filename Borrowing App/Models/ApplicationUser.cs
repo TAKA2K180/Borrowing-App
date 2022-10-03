@@ -11,5 +11,6 @@ namespace Borrowing_App.Models
         public string LastName { get; set; }
         public string Department { get; set; }
         public int UsernameChangeLimit { get; set; } = 10;
+        public string UserRole { get; set; }
     }
 }

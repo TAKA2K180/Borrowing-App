@@ -1,7 +1,13 @@
 ﻿@model Borrowing_App.Models.Borrower
+@inject UserManager<ApplicationUser> applicationUser
 
 @{
     ViewData["Title"] = "Edit";
+    //string userId = default;
+    //if (User.IsInRole("Basic") == true)
+    //{
+        
+    //}
 }
 
 <h1>Edit</h1>
@@ -53,6 +59,13 @@
                 <input asp-for="Remarks" class="form-control" />
                 <span asp-validation-for="Remarks" class="text-danger"></span>
             </div>
+            
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"> Select Status</label>
+                @Html.DropDownListFor(m => m.Status, new SelectList(Enum.GetValues(typeof(Borrower.StatusSelect))), "Select status", htmlAttributes: new { @class = "form-control" })
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div></div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

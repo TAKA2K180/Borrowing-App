@@ -1,4 +1,5 @@
-﻿using Borrowing_App.Models;
+﻿using Borrowing_App.Data;
+using Borrowing_App.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,13 @@ namespace Borrowing_App.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
 
-        public UserRolesController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserRolesController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _context = context;
         }
         public async Task<IActionResult> Index()
         {
@@ -79,6 +82,21 @@ namespace Borrowing_App.Controllers
                 return View(model);
             }
             result = await _userManager.AddToRolesAsync(user, model.Where(x => x.Selected).Select(y => y.RoleName));
+            var userrole = roles.FirstOrDefault();
+            var users = await _userManager.Users.ToListAsync();
+            var currentUser = new ApplicationUser();
+            //if (userrole != null)
+            ////{
+            ////    foreach (ApplicationUser user2 in users)
+            ////    {
+            ////        if (user2.EmpiID == _userManager.Users.FirstOrDefault().EmpiID)
+            ////        {
+            ////            currentUser.UserRole = userrole;
+            ////            return View(currentUser);
+            ////        }
+            ////    }
+            //    //_context.Borrower.ToList().Where(u => u.EmpiId == _userManager.Users.FirstOrDefault().EmpiID);
+            //}
             if (!result.Succeeded)
             {
                 ModelState.AddModelError("", "Cannot add selected roles to user");

@@ -26,13 +26,14 @@ namespace Borrowing_App.Models
         public DateTime BorrowDate { get; set; }
         [Required]
         public string Remarks { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         [EnumDataType(typeof(StatusSelect))]
         public StatusSelect StatusType {get; set;}
 
         [Display(Name = "Actions")]
         public int ActionId { get; set; }
+        
         public enum StatusSelect
         {
             Pending,

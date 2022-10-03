@@ -18,7 +18,6 @@ namespace Borrowing_App.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        
         public BorrowersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
@@ -96,6 +95,7 @@ namespace Borrowing_App.Controllers
                     borrowers.Name = user.FirstName + " " + user.LastName;
                     borrowers.Department = user.Department;
                     borrowers.BorrowDate = DateTime.Now;
+                    borrowers.Status = "Pending";
                 }
             }
             ViewData["Borrower"] = borrowers;
@@ -107,11 +107,12 @@ namespace Borrowing_App.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks")] Borrower borrower)
+        public async Task<IActionResult> Create([Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks,Status")] Borrower borrower)
         {
             if (ModelState.IsValid)
             {
                 borrower.id = Guid.NewGuid();
+                borrower.Status = "Pending";
                 _context.Add(borrower);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -140,7 +141,7 @@ namespace Borrowing_App.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks, Status")] Borrower borrower)
+        public async Task<IActionResult> Edit(Guid id, [Bind("id,EmpiId,Name,Department,Item,ItemDescription,Reason,BorrowDate,Remarks,Status")] Borrower borrower)
         {
             if (id != borrower.id)
             {
@@ -151,7 +152,7 @@ namespace Borrowing_App.Controllers
             {
                 try
                 {
-                    borrower.Status = "Pending";
+                    //borrower.Status = borrower.StatusType.ToString();
                     _context.Update(borrower);
                     await _context.SaveChangesAsync();
                 }
