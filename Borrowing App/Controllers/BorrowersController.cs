@@ -9,6 +9,7 @@ using Borrowing_App.Data;
 using Borrowing_App.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Borrowing_App.Helpers;
 
 namespace Borrowing_App.Controllers
 {
@@ -26,39 +27,57 @@ namespace Borrowing_App.Controllers
         }
         [Authorize]
         // GET: Borrowers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder,string currentFilter,string searchString,int? pageNumber)
         {
+            ViewData["CurrentSort"] = sortOrder;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            int pageSize = 5;
+
             if (HttpContext.User.IsInRole("Basic") == true)
             {
                 var users = await _userManager.Users.ToListAsync();
+                var email = HttpContext.User.Identity.Name;
                 
                 var borrowers = new Borrower();
                 foreach (ApplicationUser user in users)
                 {
-                    if (user.Email.ToString() == HttpContext.User.Identity.Name)
+                    if (user.Email == HttpContext.User.Identity.Name)
                     {
                         var id = user.EmpiID;
                         var result = _context.Borrower.Where(u => u.EmpiId == id);
-                        return View(result);
+                        //return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
+                        var paging = await PaginatedList<Borrower>.CreateAsync(result.AsNoTracking(), pageNumber ?? 1, pageSize);
+                        return View(paging);
                     }
-                    else
-                    {
-                        string error1 = "Error :(";
-                        return View(error1);
-                    }
+                    //else
+                    //{
+                    //    string error1 = "Error";
+                    //    return View(error1);
+                    //}
                 }
-                string error = "Error :(";
+                string error = "Error";
                 return View(error);
             }
             else if (HttpContext.User.IsInRole("SuperAdmin") == true)
             {
+                var query = from s in _context.Borrower select s;
+                var result = query.Select(s => s);
+                var paging = await PaginatedList<Borrower>.CreateAsync(result.AsNoTracking(), pageNumber ?? 1, pageSize);
                 return _context.Borrower != null ?
-                          View(await _context.Borrower.ToListAsync()) :
+                          View(paging) :
                           Problem("Entity set 'ApplicationDbContext.Borrower'  is null.");
             }
             else
             {
-                string error = "Error :(";
+                string error = "Error";
                 return View(error);
             }
         }
@@ -89,7 +108,7 @@ namespace Borrowing_App.Controllers
             var borrowers = new Borrower();
             foreach (ApplicationUser user in users)
             {
-                if (user.Email.ToString() == HttpContext.User.Identity.Name)
+                if (user.Email == HttpContext.User.Identity.Name)
                 {
                     borrowers.EmpiId = user.EmpiID;
                     borrowers.Name = user.FirstName + " " + user.LastName;
@@ -116,6 +135,7 @@ namespace Borrowing_App.Controllers
                 _context.Add(borrower);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+                //INSERT SMTP FUNCTION HERE();
             }
             return View(borrower);
         }
@@ -153,6 +173,7 @@ namespace Borrowing_App.Controllers
                 try
                 {
                     //borrower.Status = borrower.StatusType.ToString();
+                    borrower.Status = "Pending";
                     _context.Update(borrower);
                     await _context.SaveChangesAsync();
                 }

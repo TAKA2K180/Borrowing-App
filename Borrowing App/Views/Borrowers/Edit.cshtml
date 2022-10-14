@@ -1,13 +1,20 @@
-﻿@model Borrowing_App.Models.Borrower
+﻿@using Borrowing_App.Data
+@model Borrowing_App.Models.Borrower
 @inject UserManager<ApplicationUser> applicationUser
+@inject SignInManager<ApplicationUser> signInManager
 
 @{
     ViewData["Title"] = "Edit";
-    //string userId = default;
-    //if (User.IsInRole("Basic") == true)
-    //{
-        
-    //}
+    string userId = default;
+    ApplicationUser applicationUser = new ApplicationUser();
+    if (User.IsInRole("Basic") == true)
+    {
+        userId = "Basic";
+    }
+    else if (User.IsInRole("SuperAdmin") == true)
+    {
+        userId = "SuperAdmin";
+    }
 }
 
 <h1>Edit</h1>
@@ -59,12 +66,15 @@
                 <input asp-for="Remarks" class="form-control" />
                 <span asp-validation-for="Remarks" class="text-danger"></span>
             </div>
-            
-            <div class="form-group">
+            @if (userId == "SuperAdmin")
+            {
+                <div class="form-group">
                 <label asp-for="Status" class="control-label"> Select Status</label>
-                @Html.DropDownListFor(m => m.Status, new SelectList(Enum.GetValues(typeof(Borrower.StatusSelect))), "Select status", htmlAttributes: new { @class = "form-control" })
+                <br>
+                @Html.DropDownListFor(m => m.Status, new SelectList(Enum.GetValues(typeof(Borrower.StatusSelect))), "Select status", htmlAttributes: new { @class = "form-          control" })
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
+            }
             <div></div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

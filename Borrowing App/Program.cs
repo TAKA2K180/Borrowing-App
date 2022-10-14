@@ -1,15 +1,16 @@
 using Borrowing_App;
 using Borrowing_App.Data;
 using Borrowing_App.Models;
+using EntityFrameworkCore.UseRowNumberForPaging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, i => i.UseRowNumberForPaging()));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer());
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.User.RequireUniqueEmail = false;
@@ -86,11 +87,6 @@ using (var scope = app.Services.CreateScope())
 //        throw;
 //    }
 //}
-Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
 app.Run();
 
 
